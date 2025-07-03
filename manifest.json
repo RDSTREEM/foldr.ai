@@ -1,17 +1,13 @@
 {
-  "manifest_version": 3,
-  "name": "Foldr.ai",
+  "host_permissions": ["https://chatgpt.com/*"],
+  "name": "Foldr",
   "version": "0.1",
-  "description": "Organize ChatGPT chats by folders.",
-  "permissions": [],
-  "host_permissions": [
-    "https://chat.openai.com/*",
-    "https://www.chatgpt.com/*"
-  ],
+  "manifest_version": 3,
   "content_scripts": [
     {
-      "matches": ["https://chat.openai.com/*", "https://www.chatgpt.com/*"],
-      "js": ["content.js"]
+      "matches": ["https://chatgpt.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ]
 }

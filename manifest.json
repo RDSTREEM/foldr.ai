@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Foldr.ai",
+  "version": "0.1",
+  "description": "Organize ChatGPT chats by folders.",
+  "permissions": [],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://www.chatgpt.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/*", "https://www.chatgpt.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

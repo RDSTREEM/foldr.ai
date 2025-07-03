@@ -1,26 +1,32 @@
-function addFolderHeader() {
-  const sidebar = document.querySelector("nav");
-  if (!sidebar) {
-    setTimeout(addFolderHeader, 500);
-    return;
-  }
+function injectFolderSection() {
+  const checkSidebar = setInterval(() => {
+    const nav = document.querySelector('nav[aria-label="Chat history"]');
+    if (!nav) return;
 
-  if (document.getElementById("foldr-folder-header")) return;
+    const existing = document.getElementById("foldrai-folder-header");
+    if (existing) {
+      clearInterval(checkSidebar);
+      return;
+    }
 
-  const gptsButton = Array.from(sidebar.querySelectorAll("a")).find((a) =>
-    a.textContent.includes("GPTs")
-  );
-
-  if (gptsButton) {
     const folderHeader = document.createElement("div");
-    folderHeader.id = "pinfold-folder-header";
-    folderHeader.textContent = "Folders";
-    folderHeader.style.cssText =
-      "padding: 8px 12px; color: #aaa; font-size: 13px;";
-    gptsButton.parentNode.insertBefore(folderHeader, gptsButton.nextSibling);
-  }
+    folderHeader.id = "foldrai-folder-header";
+    folderHeader.textContent = "📂 Folders (coming soon)";
+    folderHeader.style.cssText = `
+      padding: 0.5rem 1rem;
+      font-size: 13px;
+      font-weight: bold;
+      color: #ccc;
+    `;
+
+    const stickyTopBlock = nav.querySelector("div[class*='sticky']");
+    if (stickyTopBlock) {
+      nav.insertBefore(folderHeader, stickyTopBlock.nextSibling);
+      clearInterval(checkSidebar);
+    }
+  }, 500);
 }
 
 window.addEventListener("load", () => {
-  setTimeout(addFolderHeader, 2000);
+  setTimeout(injectFolderSection, 1500);
 });

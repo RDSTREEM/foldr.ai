@@ -1,13 +1,51 @@
-function injectFolderSection() {
-  const checkInterval = setInterval(() => {
-    const historyDiv = document.getElementById("history");
-    const aside = historyDiv?.querySelector("aside");
+function createModal() {
+  const overlay = document.createElement("div");
+  overlay.id = "foldrai-modal-overlay";
+  overlay.innerHTML = `
+    <div id="foldrai-modal">
+      <h2 id="foldrai-modal-title">Modal Title</h2>
+      <div id="foldrai-modal-content"></div>
+      <div>
+        <button id="foldrai-modal-confirm">Confirm</button>
+        <button id="foldrai-modal-cancel" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Cancel button hides modal
+  document.getElementById("foldrai-modal-cancel").onclick = () => {
+    overlay.style.display = "none";
+  };
+}
+
+function showModal({ title, contentHTML, onConfirm }) {
+  const overlay = document.getElementById("foldrai-modal-overlay");
+  const titleEl = document.getElementById("foldrai-modal-title");
+  const contentEl = document.getElementById("foldrai-modal-content");
+  const confirmBtn = document.getElementById("foldrai-modal-confirm");
+
+  titleEl.textContent = title;
+  contentEl.innerHTML = contentHTML;
+
+  confirmBtn.onclick = () => {
+    onConfirm();
+    overlay.style.display = "none";
+  };
+
+  overlay.style.display = "flex";
+}
+
+function injectSidebar() {
+  const check = setInterval(() => {
+    const history = document.getElementById("history");
+    const aside = history?.querySelector("aside");
     const chatsHeader = aside?.querySelector("h2.__menu-label");
 
     if (!aside || !chatsHeader) return;
 
     if (document.getElementById("foldrai-folder-section")) {
-      clearInterval(checkInterval);
+      clearInterval(check);
       return;
     }
 
@@ -25,92 +63,30 @@ function injectFolderSection() {
     folderList.id = "foldrai-folder-list";
     section.appendChild(folderList);
 
-    const addBtn = document.createElement("button");
-    addBtn.textContent = "+ Add Folder";
-    addBtn.style.cssText =
+    const createBtn = document.createElement("button");
+    createBtn.textContent = "+ Create Folder";
+    createBtn.style.cssText =
       "background: none; border: none; color: #4caf50; font-size: 13px; cursor: pointer;";
-    addBtn.onclick = () => {
-      const name = prompt("Folder name:");
-      if (!name) return;
-      chrome.storage.local.get(["folders"], (data) => {
-        const folders = data.folders || [];
-        folders.push({ name, chats: [] });
-        chrome.storage.local.set({ folders }, renderFolders);
+    createBtn.onclick = () => {
+      showModal({
+        title: "Create Folder",
+        contentHTML: `<input type="text" id="foldr-folder-name" placeholder="Folder name..." />`,
+        onConfirm: () => {
+          const name = document.getElementById("foldr-folder-name").value;
+          if (!name) return;
+          chrome.storage.local.get(["folders"], (data) => {
+            const folders = data.folders || [];
+            folders.push({ name, chats: [] });
+            chrome.storage.local.set({ folders }, renderFolders);
+          });
+        },
       });
     };
-    section.appendChild(addBtn);
 
-    const addToFolderBtn = document.createElement("button");
-    addToFolderBtn.textContent = "➕ Add Chat to Folder";
-    addToFolderBtn.style.cssText =
-      "background: none; border: none; color: #2196f3; font-size: 13px; cursor: pointer; display: block; margin-top: 4px;";
-    section.appendChild(addToFolderBtn);
-
-    const dropdownWrapper = document.createElement("div");
-    dropdownWrapper.style.display = "none";
-    dropdownWrapper.style.marginTop = "6px";
-
-    const select = document.createElement("select");
-    select.style.cssText = "width: 100%; font-size: 13px; padding: 2px;";
-    dropdownWrapper.appendChild(select);
-
-    const confirmBtn = document.createElement("button");
-    confirmBtn.textContent = "✅ Add";
-    confirmBtn.style.cssText =
-      "margin-top: 4px; font-size: 12px; background: #4caf50; color: white; border: none; padding: 4px 6px; cursor: pointer;";
-    dropdownWrapper.appendChild(confirmBtn);
-
-    section.appendChild(dropdownWrapper);
+    section.appendChild(createBtn);
     aside.insertBefore(section, chatsHeader);
-
-    // Show dropdown when button is clicked
-    addToFolderBtn.onclick = () => {
-      chrome.storage.local.get(["folders"], (data) => {
-        const folders = data.folders || [];
-        if (folders.length === 0) {
-          alert("No folders yet. Please add one first.");
-          return;
-        }
-
-        // Clear and repopulate dropdown
-        select.innerHTML = "";
-        folders.forEach((folder, index) => {
-          const option = document.createElement("option");
-          option.value = index;
-          option.textContent = folder.name;
-          select.appendChild(option);
-        });
-
-        dropdownWrapper.style.display = "block";
-      });
-    };
-
-    // Confirm add to selected folder
-    confirmBtn.onclick = () => {
-      const folderIndex = select.value;
-      if (folderIndex === "") return;
-
-      const title = document.title.replace(" - ChatGPT", "").trim();
-      const url = window.location.href;
-
-      chrome.storage.local.get(["folders"], (data) => {
-        const folders = data.folders || [];
-        const folder = folders[folderIndex];
-
-        // Prevent duplicates
-        if (!folder.chats.some((c) => c.url === url)) {
-          folder.chats.push({ title, url });
-          chrome.storage.local.set({ folders }, renderFolders);
-        } else {
-          alert("This chat is already in that folder.");
-        }
-
-        dropdownWrapper.style.display = "none"; // Hide after use
-      });
-    };
-
     renderFolders();
-    clearInterval(checkInterval);
+    clearInterval(check);
   }, 500);
 }
 
@@ -119,7 +95,6 @@ function renderFolders() {
     const folders = data.folders || [];
     const container = document.getElementById("foldrai-folder-list");
     if (!container) return;
-
     container.innerHTML = "";
 
     folders.forEach((folder) => {
@@ -146,10 +121,10 @@ function renderFolders() {
         chatList.appendChild(link);
       });
 
-      name.addEventListener("click", () => {
+      name.onclick = () => {
         chatList.style.display =
           chatList.style.display === "none" ? "block" : "none";
-      });
+      };
 
       wrapper.appendChild(chatList);
       container.appendChild(wrapper);
@@ -157,6 +132,65 @@ function renderFolders() {
   });
 }
 
+function injectAddButtonInChatPage() {
+  if (!window.location.pathname.startsWith("/c/")) return;
+
+  const check = setInterval(() => {
+    const shareBtn = document.querySelector('button[aria-label="Share"]');
+    if (!shareBtn || document.getElementById("foldrai-chat-btn")) return;
+
+    const container = shareBtn.parentNode;
+    const addBtn = document.createElement("button");
+    addBtn.id = "foldrai-chat-btn";
+    addBtn.textContent = "➕ Add to Folder";
+    addBtn.style.cssText = `
+      background: none;
+      border: 1px solid #4caf50;
+      color: #4caf50;
+      font-size: 13px;
+      padding: 4px 6px;
+      margin-right: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+    `;
+
+    addBtn.onclick = () => {
+      chrome.storage.local.get(["folders"], (data) => {
+        const folders = data.folders || [];
+        if (folders.length === 0) {
+          alert("No folders yet. Create one in the sidebar first.");
+          return;
+        }
+
+        const options = folders
+          .map((f, i) => `<option value="${i}">${f.name}</option>`)
+          .join("");
+        showModal({
+          title: "Add This Chat to Folder",
+          contentHTML: `<select id="foldr-folder-select">${options}</select>`,
+          onConfirm: () => {
+            const index = document.getElementById("foldr-folder-select").value;
+            const title = document.title.replace(" - ChatGPT", "").trim();
+            const url = window.location.href;
+
+            if (!folders[index].chats.some((c) => c.url === url)) {
+              folders[index].chats.push({ title, url });
+              chrome.storage.local.set({ folders }, renderFolders);
+            } else {
+              alert("Already in that folder!");
+            }
+          },
+        });
+      });
+    };
+
+    container.insertBefore(addBtn, shareBtn);
+    clearInterval(check);
+  }, 500);
+}
+
 window.addEventListener("load", () => {
-  injectFolderSection();
+  createModal();
+  injectSidebar();
+  injectAddButtonInChatPage();
 });

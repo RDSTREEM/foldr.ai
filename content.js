@@ -44,10 +44,27 @@ function injectFolderSection() {
     addToFolderBtn.textContent = "➕ Add Chat to Folder";
     addToFolderBtn.style.cssText =
       "background: none; border: none; color: #2196f3; font-size: 13px; cursor: pointer; display: block; margin-top: 4px;";
-    addToFolderBtn.onclick = () => {
-      const title = document.title.replace(" - ChatGPT", "").trim();
-      const url = window.location.href;
+    section.appendChild(addToFolderBtn);
 
+    const dropdownWrapper = document.createElement("div");
+    dropdownWrapper.style.display = "none";
+    dropdownWrapper.style.marginTop = "6px";
+
+    const select = document.createElement("select");
+    select.style.cssText = "width: 100%; font-size: 13px; padding: 2px;";
+    dropdownWrapper.appendChild(select);
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.textContent = "✅ Add";
+    confirmBtn.style.cssText =
+      "margin-top: 4px; font-size: 12px; background: #4caf50; color: white; border: none; padding: 4px 6px; cursor: pointer;";
+    dropdownWrapper.appendChild(confirmBtn);
+
+    section.appendChild(dropdownWrapper);
+    aside.insertBefore(section, chatsHeader);
+
+    // Show dropdown when button is clicked
+    addToFolderBtn.onclick = () => {
       chrome.storage.local.get(["folders"], (data) => {
         const folders = data.folders || [];
         if (folders.length === 0) {
@@ -55,15 +72,30 @@ function injectFolderSection() {
           return;
         }
 
-        const folderNames = folders.map((f) => f.name).join("\n");
-        const chosen = prompt(`Add chat to which folder?\n\n${folderNames}`);
-        if (!chosen) return;
+        // Clear and repopulate dropdown
+        select.innerHTML = "";
+        folders.forEach((folder, index) => {
+          const option = document.createElement("option");
+          option.value = index;
+          option.textContent = folder.name;
+          select.appendChild(option);
+        });
 
-        const folder = folders.find((f) => f.name === chosen);
-        if (!folder) {
-          alert("Folder not found.");
-          return;
-        }
+        dropdownWrapper.style.display = "block";
+      });
+    };
+
+    // Confirm add to selected folder
+    confirmBtn.onclick = () => {
+      const folderIndex = select.value;
+      if (folderIndex === "") return;
+
+      const title = document.title.replace(" - ChatGPT", "").trim();
+      const url = window.location.href;
+
+      chrome.storage.local.get(["folders"], (data) => {
+        const folders = data.folders || [];
+        const folder = folders[folderIndex];
 
         // Prevent duplicates
         if (!folder.chats.some((c) => c.url === url)) {
@@ -72,11 +104,10 @@ function injectFolderSection() {
         } else {
           alert("This chat is already in that folder.");
         }
+
+        dropdownWrapper.style.display = "none"; // Hide after use
       });
     };
-    section.appendChild(addToFolderBtn);
-
-    aside.insertBefore(section, chatsHeader);
 
     renderFolders();
     clearInterval(checkInterval);

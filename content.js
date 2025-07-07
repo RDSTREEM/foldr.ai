@@ -111,15 +111,41 @@ function renderFolders() {
       chatList.style.marginLeft = "10px";
       chatList.style.display = "none";
 
-      folder.chats.forEach((chat) => {
+      folder.chats.forEach((chat, chatIdx) => {
+        // Add pin icon/button
+        const linkWrapper = document.createElement("div");
+        linkWrapper.style.display = "flex";
+        linkWrapper.style.alignItems = "center";
+
         const link = document.createElement("a");
         link.href = chat.url;
         link.textContent = chat.title;
         link.style.cssText =
-          "display: block; color: #aaa; font-size: 12px; text-decoration: none;";
+          "display: block; color: #aaa; font-size: 12px; text-decoration: none; flex: 1;";
         link.target = "_blank";
-        chatList.appendChild(link);
+        linkWrapper.appendChild(link);
+
+        const pinBtn = document.createElement("button");
+        pinBtn.textContent = chat.pinned ? "📌" : "📍";
+        pinBtn.title = chat.pinned ? "Unpin" : "Pin";
+        pinBtn.style.cssText =
+          "background: none; border: none; color: #ffd700; font-size: 14px; cursor: pointer; margin-left: 4px;";
+        pinBtn.onclick = (e) => {
+          e.stopPropagation();
+          chrome.storage.local.get(["folders"], (data) => {
+            const folders = data.folders || [];
+            const chats = folders.find((f) => f.name === folder.name)?.chats;
+            if (!chats) return;
+            chats[chatIdx].pinned = !chats[chatIdx].pinned;
+            chrome.storage.local.set({ folders }, renderFolders);
+          });
+        };
+        linkWrapper.appendChild(pinBtn);
+        chatList.appendChild(linkWrapper);
       });
+
+      // Sort chats: pinned first
+      folder.chats.sort((a, b) => (b.pinned === true) - (a.pinned === true));
 
       name.onclick = () => {
         chatList.style.display =
@@ -174,7 +200,7 @@ function injectAddButtonInChatPage() {
             const url = window.location.href;
 
             if (!folders[index].chats.some((c) => c.url === url)) {
-              folders[index].chats.push({ title, url });
+              folders[index].chats.push({ title, url, pinned: false });
               chrome.storage.local.set({ folders }, renderFolders);
             } else {
               alert("Already in that folder!");

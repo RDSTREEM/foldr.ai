@@ -1,4 +1,4 @@
-// content.js is now just a stub that loads the modular code
+// main.js
 import { createModal } from "./modal.js";
 import { injectSidebar } from "./sidebar.js";
 import { injectAddButtonInChatPage } from "./chatActions.js";

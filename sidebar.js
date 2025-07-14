@@ -18,6 +18,15 @@ export function injectSidebar() {
     section.id = "foldrai-folder-section";
     section.style.padding = "0.5rem 1rem";
 
+    // Search bar
+    const searchBar = document.createElement("input");
+    searchBar.type = "text";
+    searchBar.placeholder = "Search folders...";
+    searchBar.id = "foldrai-folder-search";
+    searchBar.style.cssText =
+      "width: 100%; margin-bottom: 0.5rem; padding: 2px 6px; font-size: 13px; border-radius: 3px; border: 1px solid #333; background: #222; color: #ccc;";
+    section.appendChild(searchBar);
+
     const title = document.createElement("div");
     title.textContent = "📂 Folders";
     title.style.cssText =
@@ -42,7 +51,9 @@ export function injectSidebar() {
           chrome.storage.local.get(["folders"], (data) => {
             const folders = data.folders || [];
             folders.push({ name, chats: [] });
-            chrome.storage.local.set({ folders }, renderFolders);
+            chrome.storage.local.set({ folders }, () =>
+              renderFolders(searchBar.value)
+            );
           });
         },
       });
@@ -50,17 +61,25 @@ export function injectSidebar() {
 
     section.appendChild(createBtn);
     aside.insertBefore(section, chatsHeader);
-    renderFolders();
+    renderFolders("");
+    searchBar.addEventListener("input", (e) => renderFolders(searchBar.value));
     clearInterval(check);
   }, 500);
 }
 
-export function renderFolders() {
+export function renderFolders(filter = "") {
   chrome.storage.local.get(["folders"], (data) => {
-    const folders = data.folders || [];
+    let folders = data.folders || [];
     const container = document.getElementById("foldrai-folder-list");
     if (!container) return;
     container.innerHTML = "";
+
+    // Filter folders by search
+    if (filter) {
+      folders = folders.filter((f) =>
+        f.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
 
     folders.forEach((folder, folderIdx) => {
       const wrapper = document.createElement("div");
@@ -75,6 +94,50 @@ export function renderFolders() {
       name.style.cssText =
         "font-size: 13px; color: white; font-weight: 500; cursor: pointer; flex: 1;";
       nameRow.appendChild(name);
+
+      // Move up button
+      const upBtn = document.createElement("button");
+      upBtn.textContent = "⬆️";
+      upBtn.title = "Move Up";
+      upBtn.style.cssText =
+        "background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; margin-left: 4px;";
+      upBtn.disabled = folderIdx === 0;
+      upBtn.onclick = (e) => {
+        e.stopPropagation();
+        chrome.storage.local.get(["folders"], (data) => {
+          const folders = data.folders || [];
+          if (folderIdx > 0) {
+            [folders[folderIdx - 1], folders[folderIdx]] = [
+              folders[folderIdx],
+              folders[folderIdx - 1],
+            ];
+            chrome.storage.local.set({ folders }, () => renderFolders(filter));
+          }
+        });
+      };
+      nameRow.appendChild(upBtn);
+
+      // Move down button
+      const downBtn = document.createElement("button");
+      downBtn.textContent = "⬇️";
+      downBtn.title = "Move Down";
+      downBtn.style.cssText =
+        "background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; margin-left: 2px;";
+      downBtn.disabled = folderIdx === folders.length - 1;
+      downBtn.onclick = (e) => {
+        e.stopPropagation();
+        chrome.storage.local.get(["folders"], (data) => {
+          const folders = data.folders || [];
+          if (folderIdx < folders.length - 1) {
+            [folders[folderIdx + 1], folders[folderIdx]] = [
+              folders[folderIdx],
+              folders[folderIdx + 1],
+            ];
+            chrome.storage.local.set({ folders }, () => renderFolders(filter));
+          }
+        });
+      };
+      nameRow.appendChild(downBtn);
 
       // Edit button
       const editBtn = document.createElement("button");
@@ -101,7 +164,9 @@ export function renderFolders() {
                 return;
               }
               folders[folderIdx].name = newName;
-              chrome.storage.local.set({ folders }, renderFolders);
+              chrome.storage.local.set({ folders }, () =>
+                renderFolders(filter)
+              );
             });
           },
         });
@@ -123,7 +188,9 @@ export function renderFolders() {
             chrome.storage.local.get(["folders"], (data) => {
               const folders = data.folders || [];
               folders.splice(folderIdx, 1);
-              chrome.storage.local.set({ folders }, renderFolders);
+              chrome.storage.local.set({ folders }, () =>
+                renderFolders(filter)
+              );
             });
           },
         });

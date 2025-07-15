@@ -14,16 +14,25 @@ export function injectAddButtonInChatPage() {
     addBtn.id = "foldrai-chat-btn";
     addBtn.textContent = "➕ Add to Folder";
     addBtn.style.cssText = `
-      background: none;
-      border: 1px solid #4caf50;
-      color: #4caf50;
+      background: #343541;
+      border: 1px solid #444654;
+      color: #ececf1;
       font-size: 13px;
-      padding: 4px 6px;
+      font-weight: 500;
+      border-radius: 6px;
+      padding: 4px 10px;
       margin-right: 4px;
-      border-radius: 4px;
       cursor: pointer;
+      transition: background 0.2s, border 0.2s;
     `;
-
+    addBtn.onmouseover = () => {
+      addBtn.style.background = "#444654";
+      addBtn.style.borderColor = "#565869";
+    };
+    addBtn.onmouseout = () => {
+      addBtn.style.background = "#343541";
+      addBtn.style.borderColor = "#444654";
+    };
     addBtn.onclick = () => {
       chrome.storage.local.get(["folders"], (data) => {
         const folders = data.folders || [];
@@ -37,7 +46,7 @@ export function injectAddButtonInChatPage() {
           .join("");
         showModal({
           title: "Add This Chat to Folder",
-          contentHTML: `<select id=\"foldr-folder-select\">${options}</select>`,
+          contentHTML: `<select id=\"foldr-folder-select\" style=\"width: 100%; padding: 6px 10px; font-size: 14px; border-radius: 6px; border: 1px solid #343541; background: #343541; color: #ececf1; outline: none;\">${options}</select>`,
           onConfirm: () => {
             const index = document.getElementById("foldr-folder-select").value;
             const title = document.title.replace(" - ChatGPT", "").trim();

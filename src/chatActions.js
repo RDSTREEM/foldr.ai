@@ -4,11 +4,9 @@ import { renderFolders } from "./sidebar.js";
 
 export function injectAddButtonInChatPage() {
   if (!window.location.pathname.startsWith("/c/")) return;
-
   const check = setInterval(() => {
     const shareBtn = document.querySelector('button[aria-label="Share"]');
     if (!shareBtn || document.getElementById("foldrai-chat-btn")) return;
-
     const container = shareBtn.parentNode;
     const addBtn = document.createElement("button");
     addBtn.id = "foldrai-chat-btn";
@@ -40,7 +38,6 @@ export function injectAddButtonInChatPage() {
           alert("No folders yet. Create one in the sidebar first.");
           return;
         }
-
         const options = folders
           .map((f, i) => `<option value="${i}">${f.name}</option>`)
           .join("");
@@ -51,7 +48,6 @@ export function injectAddButtonInChatPage() {
             const index = document.getElementById("foldr-folder-select").value;
             const title = document.title.replace(" - ChatGPT", "").trim();
             const url = window.location.href;
-
             if (!folders[index].chats.some((c) => c.url === url)) {
               folders[index].chats.push({ title, url, pinned: false });
               chrome.storage.local.set({ folders }, renderFolders);
@@ -62,7 +58,6 @@ export function injectAddButtonInChatPage() {
         });
       });
     };
-
     container.insertBefore(addBtn, shareBtn);
     clearInterval(check);
   }, 500);

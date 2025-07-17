@@ -1,8 +1,8 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const filesToCopy = ["manifest.json", "style.css"];
-const distDir = path.join(__dirname, "dist");
+const filesToCopy = ['manifest.json', 'style.css'];
+const distDir = path.join(__dirname, 'dist');
 
 if (!fs.existsSync(distDir)) fs.mkdirSync(distDir);
 

@@ -2,7 +2,7 @@
   "name": "foldr-ai-extension",
   "version": "0.2.0",
   "description": "Organize ChatGPT chats by folders.",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build && npm run postbuild",
@@ -15,7 +15,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/RDSTREEM/foldr.ai/issues"
   },

@@ -1,10 +1,12 @@
 {
-  "name": "foldr.ai",
-  "version": "1.0.0",
-  "description": "This is a Chrome extension that adds folder management and chat organization features to a chat-based web application (such as ChatGPT).",
+  "name": "foldr-ai-extension",
+  "version": "0.2.0",
+  "description": "Organize ChatGPT chats by folders.",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build",
+    "postbuild": "copy manifest.json dist/ && copy style.css dist/"
   },
   "repository": {
     "type": "git",

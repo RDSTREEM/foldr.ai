@@ -5,10 +5,10 @@ export default defineConfig({
     outDir: "./dist",
     rollupOptions: {
       input: {
-        content: "./src/content.js",
+        content: "./src/main.js",
       },
       output: {
-        entryFileNames: "content.js",
+        entryFileNames: "main.js",
       },
     },
   },

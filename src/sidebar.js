@@ -1,7 +1,5 @@
-// sidebar.js
 import { showModal } from "./modal.js";
 
-// Injects the sidebar UI and sets up search and create folder functionality
 export function injectSidebar() {
   const check = setInterval(() => {
     const history = document.getElementById("history");
@@ -17,7 +15,6 @@ export function injectSidebar() {
     section.style.cssText =
       "background: var(--background-primary, #202123); border-radius: 8px; margin: 0 0 12px 0; padding: 0.5rem 0.75rem; box-shadow: 0 1px 2px 0 #0002;";
 
-    // Search bar
     const searchBar = document.createElement("input");
     searchBar.type = "text";
     searchBar.placeholder = "Search folders...";
@@ -88,6 +85,8 @@ export function renderFolders(filter = "") {
         f.name.toLowerCase().includes(filter.toLowerCase())
       );
     }
+    // Track collapsed state in memory
+    if (!window._foldrCollapsedFolders) window._foldrCollapsedFolders = {};
     folders.forEach((folder, folderIdx) => {
       const wrapper = document.createElement("div");
       wrapper.style.marginBottom = "6px";
@@ -105,10 +104,19 @@ export function renderFolders(filter = "") {
         nameRow.style.background = "";
       };
       const name = document.createElement("div");
-      name.textContent = "📁 " + folder.name;
+      name.textContent =
+        (window._foldrCollapsedFolders[folder.name] ? "▶ " : "▼ ") +
+        "📁 " +
+        folder.name;
       name.style.cssText =
         "font-size: 14px; color: #ececf1; font-weight: 500; cursor: pointer; flex: 1; padding: 2px 0;";
+      name.onclick = () => {
+        window._foldrCollapsedFolders[folder.name] =
+          !window._foldrCollapsedFolders[folder.name];
+        renderFolders(filter);
+      };
       nameRow.appendChild(name);
+      // ...existing code for upBtn, downBtn, editBtn, deleteBtn...
       // Move up button
       const upBtn = document.createElement("button");
       upBtn.textContent = "⬆️";
@@ -208,6 +216,29 @@ export function renderFolders(filter = "") {
       };
       nameRow.appendChild(deleteBtn);
       wrapper.appendChild(nameRow);
+      // Collapsible chat list
+      if (!window._foldrCollapsedFolders[folder.name]) {
+        const chatList = document.createElement("div");
+        chatList.style.marginLeft = "18px";
+        chatList.style.marginTop = "2px";
+        chatList.style.marginBottom = "4px";
+        if (folder.chats && folder.chats.length > 0) {
+          folder.chats.forEach((chat) => {
+            const chatRow = document.createElement("div");
+            chatRow.textContent = chat.title;
+            chatRow.style.cssText =
+              "font-size: 13px; color: #bcbcbc; padding: 2px 0; cursor: pointer;";
+            chatRow.onclick = () => {
+              window.open(chat.url, "_blank");
+            };
+            chatList.appendChild(chatRow);
+          });
+        } else {
+          chatList.textContent = "(No chats in this folder)";
+          chatList.style.color = "#666";
+        }
+        wrapper.appendChild(chatList);
+      }
       container.appendChild(wrapper);
     });
   });

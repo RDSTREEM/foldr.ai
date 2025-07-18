@@ -1,4 +1,3 @@
-// Initializes navigation detection and injects Add to Folder button on chat page navigation
 export function initChatButtonNavigation() {
   let lastPathname = window.location.pathname;
   function handleChatPage() {
@@ -17,7 +16,6 @@ export function initChatButtonNavigation() {
   });
   observer.observe(document.body, { childList: true, subtree: true });
 }
-// chatActions.js
 import { showModal } from "./modal.js";
 import { renderFolders } from "./sidebar.js";
 

@@ -1,3 +1,22 @@
+// Initializes navigation detection and injects Add to Folder button on chat page navigation
+export function initChatButtonNavigation() {
+  let lastPathname = window.location.pathname;
+  function handleChatPage() {
+    if (window.location.pathname.startsWith("/c/")) {
+      if (!document.getElementById("foldrai-chat-btn")) {
+        injectAddButtonInChatPage();
+      }
+    }
+  }
+  handleChatPage();
+  const observer = new MutationObserver(() => {
+    if (window.location.pathname !== lastPathname) {
+      lastPathname = window.location.pathname;
+      handleChatPage();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
 // chatActions.js
 import { showModal } from "./modal.js";
 import { renderFolders } from "./sidebar.js";

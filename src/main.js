@@ -1,10 +1,10 @@
 // main.js
 import { createModal } from "./modal.js";
 import { injectSidebar } from "./sidebar.js";
-import { injectAddButtonInChatPage } from "./chatActions.js";
+import { initChatButtonNavigation } from "./chatActions.js";
 
 window.addEventListener("load", () => {
   createModal();
   injectSidebar();
-  injectAddButtonInChatPage();
+  initChatButtonNavigation();
 });

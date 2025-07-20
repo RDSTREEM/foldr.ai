@@ -5,7 +5,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(52, 53, 65, 0.7);
+  background: #181818;
   z-index: 9999;
   display: none;
   align-items: center;

@@ -30,7 +30,7 @@ export function injectAddButtonInChatPage() {
     const addBtn = document.createElement("button");
     addBtn.id = "foldrai-chat-btn";
     addBtn.className = "foldrai-chat-btn";
-    addBtn.textContent = "➕ Add to Folder";
+    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add to Folder';
     addBtn.onclick = () => {
       chrome.storage.local.get(["folders"], (data) => {
         const folders = data.folders || [];

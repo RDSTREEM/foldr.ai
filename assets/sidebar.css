@@ -1,3 +1,17 @@
+/* Flex row for folder name and icons */
+.foldrai-folder-row-flex {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.foldrai-folder-icon {
+  display: flex;
+  align-items: center;
+}
+.foldrai-folder-label {
+  display: flex;
+  align-items: center;
+}
 /* Additional sidebar styles for wrapper and chat list */
 .foldrai-folder-wrapper {
   margin-bottom: 6px;
@@ -12,7 +26,7 @@
   background: var(--background-primary, #202123);
   border-radius: 8px;
   margin: 0 0 12px 0;
-  padding: 0.5rem 0.75rem;
+  padding: 1rem;
   box-shadow: 0 1px 2px 0 #0002;
 }
  .foldrai-folder-search {

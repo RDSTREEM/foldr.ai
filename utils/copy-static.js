@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const staticDir = path.join(__dirname, "..", "static");
+const staticDir = path.join(__dirname, "..", "assets");
 const filesToCopy = ["manifest.json", "style.css"];
 const distDir = path.join(__dirname, "..", "dist");
 

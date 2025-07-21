@@ -18,7 +18,6 @@ export function initChatButtonNavigation() {
   navObserver.observe(document.body, { childList: true, subtree: true });
 }
 import { showModal } from "./modal.js";
-import "../static/chatActions.css";
 import { renderFolders } from "./sidebar.js";
 
 export function injectAddButtonInChatPage() {

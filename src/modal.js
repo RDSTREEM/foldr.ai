@@ -1,4 +1,3 @@
-import "../static/modal.css";
 // modal.js
 export function createModal() {
   const modalOverlay = document.createElement("div");

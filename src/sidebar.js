@@ -1,5 +1,4 @@
 import { showModal } from "./modal.js";
-import "../static/sidebar.css";
 
 export function injectSidebar() {
   const sidebarInterval = setInterval(() => {
@@ -22,18 +21,19 @@ export function injectSidebar() {
     folderSearchInput.className = "foldrai-folder-search";
     folderSection.appendChild(folderSearchInput);
 
+    const folderTitle = document.createElement("div");
     folderTitle.className = "foldrai-folder-section-title";
-    folderTitle.innerHTML = '<i class="fa-solid fa-folder"></i> Folders';
+    folderTitle.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M3 7V5a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> Folders`;
     folderTitle.id = "foldrai-folder-section-title";
     folderSection.appendChild(folderTitle);
-    folderListContainer.className = "foldrai-folder-list";
+
     const folderListContainer = document.createElement("div");
+    folderListContainer.className = "foldrai-folder-list";
     folderListContainer.id = "foldrai-folder-list";
     folderSection.appendChild(folderListContainer);
 
     const createFolderBtn = document.createElement("button");
-    createFolderBtn.innerHTML =
-      '<i class="fa-solid fa-plus"></i> Create Folder';
+    createFolderBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Folder`;
     createFolderBtn.className = "foldrai-create-folder-btn";
     createFolderBtn.onclick = () => {
       showModal({
@@ -56,41 +56,46 @@ export function injectSidebar() {
     };
     folderSection.appendChild(createFolderBtn);
     sidebarAside.insertBefore(folderSection, menuHeader);
-    renderFolders("");
-    folderSearchInput.addEventListener("input", (e) =>
-      renderFolders(folderSearchInput.value)
-    );
+    // Fetch folders from storage and render
+    chrome.storage.local.get(["folders"], (data) => {
+      renderFolders("", data.folders || []);
+    });
+    folderSearchInput.addEventListener("input", (e) => {
+      chrome.storage.local.get(["folders"], (data) => {
+        renderFolders(folderSearchInput.value, data.folders || []);
+      });
+    });
     clearInterval(sidebarInterval);
   }, 500);
 }
 
 // Renders the folder list, with search, reorder, edit, and delete functionality
-export function renderFolders(filter = "") {
-  let folders = data.folders || [];
+export function renderFolders(filter = "", folders = []) {
   const container = document.getElementById("foldrai-folder-list");
   if (!container) return;
   container.innerHTML = "";
   // Filter folders by search
+  let filteredFolders = folders;
   if (filter) {
-    folders = folders.filter((f) =>
+    filteredFolders = folders.filter((f) =>
       f.name.toLowerCase().includes(filter.toLowerCase())
     );
   }
   // Track collapsed state in memory
   if (!window._foldrCollapsedFolders) window._foldrCollapsedFolders = {};
-  folders.forEach((folder, folderIdx) => {
+  filteredFolders.forEach((folder, folderIdx) => {
     const wrapper = document.createElement("div");
     wrapper.className += " foldrai-folder-wrapper";
     const nameRow = document.createElement("div");
     nameRow.className = "foldrai-folder-row";
     const name = document.createElement("div");
+    name.className = "foldrai-folder-name foldrai-folder-row-flex";
     name.innerHTML =
       (window._foldrCollapsedFolders[folder.name]
-        ? '<i class="fa-solid fa-caret-right"></i> '
-        : '<i class="fa-solid fa-caret-down"></i> ') +
-      '<i class="fa-solid fa-folder"></i> ' +
-      folder.name;
-    name.className = "foldrai-folder-name";
+        ? `<span class='foldrai-folder-icon'><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>`
+        : `<span class='foldrai-folder-icon'><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>`) +
+      `<span class='foldrai-folder-icon'><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>` +
+      `<span class='foldrai-folder-label'>${folder.name}</span>`;
     name.onclick = () => {
       window._foldrCollapsedFolders[folder.name] =
         !window._foldrCollapsedFolders[folder.name];
@@ -99,7 +104,7 @@ export function renderFolders(filter = "") {
     nameRow.appendChild(name);
     // Move up button
     const upBtn = document.createElement("button");
-    upBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+    upBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="18 15 12 9 6 15"/></svg>`;
     upBtn.title = "Move Up";
     upBtn.className = "foldrai-folder-btn up";
     upBtn.disabled = folderIdx === 0;
@@ -119,7 +124,7 @@ export function renderFolders(filter = "") {
     nameRow.appendChild(upBtn);
     // Move down button
     const downBtn = document.createElement("button");
-    downBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+    downBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="6 9 12 15 18 9"/></svg>`;
     downBtn.title = "Move Down";
     downBtn.className = "foldrai-folder-btn down";
     downBtn.disabled = folderIdx === folders.length - 1;
@@ -139,7 +144,7 @@ export function renderFolders(filter = "") {
     nameRow.appendChild(downBtn);
     // Edit button
     const editBtn = document.createElement("button");
-    editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+    editBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>`;
     editBtn.title = "Edit Folder Name";
     editBtn.className = "foldrai-folder-btn edit";
     editBtn.onclick = (e) => {
@@ -167,7 +172,7 @@ export function renderFolders(filter = "") {
     nameRow.appendChild(editBtn);
     // Delete button
     const deleteBtn = document.createElement("button");
-    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    deleteBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>`;
     deleteBtn.title = "Delete Folder";
     deleteBtn.className = "foldrai-folder-btn delete";
     deleteBtn.onclick = (e) => {

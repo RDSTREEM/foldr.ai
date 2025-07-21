@@ -1,3 +1,4 @@
+// Copies manifest.json and style.css from assets/ to dist/
 const fs = require("fs");
 const path = require("path");
 

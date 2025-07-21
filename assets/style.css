@@ -14,12 +14,11 @@
 
 /* Foldr Modal Box */
 #foldrai-modal {
-  background: #1e1e1e;
-  border-radius: 8px;
-  padding: 20px;
-  width: 320px;
-  color: white;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+background: #1e1e1e;
+border-radius: 8px;
+padding: 20px;
+color: white;
+box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
 #foldrai-modal h2 {
@@ -52,4 +51,229 @@
 
 #foldrai-modal .cancel-btn {
   background: #555;
+}
+
+/* Button styles for chatActions.js */
+#foldrai-chat-btn {
+  background: #343541;
+  border: 1px solid #444654;
+  color: #ececf1;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin-right: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+#foldrai-chat-btn:hover {
+  background: #444654;
+  border-color: #565869;
+}
+/* Select styles for modal */
+#foldr-folder-select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #343541;
+  background: #343541;
+  color: #ececf1;
+  outline: none;
+}
+
+
+/* Flex row for folder name and icons */
+.foldrai-folder-row-flex {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.foldrai-folder-icon {
+  display: flex;
+  align-items: center;
+}
+.foldrai-folder-label {
+  display: flex;
+  align-items: center;
+}
+/* Additional sidebar styles for wrapper and chat list */
+.foldrai-folder-wrapper {
+  margin-bottom: 6px;
+}
+.foldrai-chat-list {
+  margin-left: 18px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+/* Sidebar styles */
+ .foldrai-folder-section {
+  background: var(--background-primary, #202123);
+  border-radius: 8px;
+  margin: 0 0 12px 0;
+  padding: 1rem;
+  box-shadow: 0 1px 2px 0 #0002;
+}
+ .foldrai-folder-search {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #343541;
+  background: #343541;
+  color: #ececf1;
+  outline: none;
+}
+ .foldrai-folder-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ececf1;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+}
+ /* .foldrai-folder-list {
+  container for folders
+} */
+.foldrai-create-folder-btn {
+  background: #343541;
+  border: 1px solid #444654;
+  color: #ececf1;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 5px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+.foldrai-create-folder-btn:hover {
+  background: #444654;
+  border-color: #565869;
+}
+.foldrai-folder-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.foldrai-folder-row:hover {
+  background: #2a2b32;
+}
+.foldrai-folder-name {
+  font-size: 14px;
+  color: #ececf1;
+  font-weight: 500;
+  cursor: pointer;
+  flex: 1;
+  padding: 4px 0;
+}
+.foldrai-folder-btn {
+  background: none;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+.foldrai-folder-btn i {
+  pointer-events: none;
+  vertical-align: middle;
+  font-size: 15px;
+}
+.foldrai-folder-btn.up {
+  color: #aaa;
+  margin-left: 4px;
+}
+.foldrai-folder-btn.down {
+  color: #aaa;
+  margin-left: 2px;
+}
+.foldrai-folder-btn.edit {
+  color: #4caf50;
+  margin-left: 4px;
+}
+.foldrai-folder-btn.delete {
+  color: #e57373;
+  margin-left: 4px;
+}
+.foldrai-chat-row {
+  font-size: 13px;
+  color: #bcbcbc;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.foldrai-chat-row.empty {
+  color: #666;
+}
+
+
+/* Modal overlay */
+.foldrai-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #181818;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.foldrai-modal-overlay.visible {
+  display: flex;
+}
+/* Modal box */
+.foldrai-modal {
+  background: #202123;
+  color: #ececf1;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px #0008;
+  padding: 32px 28px;
+  min-width: 320px;
+  max-width: 90vw;
+}
+/* Modal title */
+.foldrai-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  letter-spacing: 0.01em;
+}
+/* Modal content */
+.foldrai-modal-content {
+  margin-bottom: 18px;
+}
+/* Modal actions */
+.foldrai-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+/* Modal confirm button */
+.foldrai-modal-confirm {
+  background: #19c37d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px 18px;
+  cursor: pointer;
+}
+/* Modal cancel button */
+.foldrai-modal-cancel {
+  background: #343541;
+  color: #ececf1;
+  border: 1px solid #444654;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px 18px;
+  cursor: pointer;
 }

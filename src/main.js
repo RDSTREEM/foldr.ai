@@ -1,9 +1,6 @@
 import { createModal } from "./modal.js";
 import { injectSidebar } from "./sidebar.js";
 import { initChatButtonNavigation } from "./chatActions.js";
-import "../assets/chatActions.css";
-import "../assets/modal.css";
-import "../assets/modal.css";
 
 window.addEventListener("load", () => {
   // Inject Font Awesome CDN

@@ -5,6 +5,38 @@ import { showModal } from "./modal.js";
 import { renderFolders } from "./sidebar.js";
 
 // =============================
+// Pin Folder
+// =============================
+/**
+ * Puts a folder at the top of the list and stores it in local storage.
+ * @param {number} index The index of the folder to pin.
+ */
+export function pinFolder(index) {
+  chrome.storage.local.get(["folders"], ({ folders }) => {
+    if (!folders[index].pinned) {
+      folders[index].pinned = true;
+      folders.sort((a, b) => (a.pinned ? -1 : b.pinned ? 1 : 0));
+      chrome.storage.local.set({ folders }, renderFolders);
+    }
+  });
+}
+
+// =============================
+// Unpin Folder
+// =============================
+/**
+ * Unpins a folder and stores it in local storage.
+ * @param {number} index The index of the folder to unpin.
+ */
+export function unpinFolder(index) {
+  chrome.storage.local.get(["folders"], ({ folders }) => {
+    if (folders[index].pinned) {
+      folders[index].pinned = false;
+      chrome.storage.local.set({ folders }, renderFolders);
+    }
+  });
+}
+// =============================
 // Chat Button Navigation
 // =============================
 /**

@@ -20,7 +20,38 @@ export function pinFolder(index) {
     }
   });
 }
-
+// =============================
+// Drag and Drop
+// =============================
+/**
+ * Starts the drag and drop functionality.
+ */
+export function initDragAndDrop() {
+  const folderList = document.getElementById("foldrai-folder-list");
+  folderList.ondragstart = (e) => {
+    const folder = e.target.closest(".foldrai-folder-wrapper");
+    if (!folder) return;
+    e.dataTransfer.setData("text", folder.dataset.index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+  folderList.ondragover = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+  folderList.ondrop = (e) => {
+    e.preventDefault();
+    const indexA = e.dataTransfer.getData("text");
+    const indexB = e.target.closest(".foldrai-folder-wrapper").dataset.index;
+    if (indexA === indexB) return;
+    chrome.storage.local.get(["folders"], ({ folders }) => {
+      const folderA = folders[indexA];
+      const folderB = folders[indexB];
+      folders.splice(indexA, 1);
+      folders.splice(indexB, 0, folderA);
+      chrome.storage.local.set({ folders }, renderFolders);
+    });
+  };
+}
 // =============================
 // Unpin Folder
 // =============================
